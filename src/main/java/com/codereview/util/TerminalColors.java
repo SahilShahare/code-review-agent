@@ -3,14 +3,14 @@ package com.codereview.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class TerminalColors {
+import static com.codereview.constants.Constants.BOLD;
+import static com.codereview.constants.Constants.CYAN;
+import static com.codereview.constants.Constants.GREEN;
+import static com.codereview.constants.Constants.RED;
+import static com.codereview.constants.Constants.RESET;
+import static com.codereview.constants.Constants.YELLOW;
 
-  private static final String RESET = "\u001B[0m";
-  private static final String BOLD = "\u001B[1m";
-  private static final String RED = "\u001B[31m";
-  private static final String YELLOW = "\u001B[33m";
-  private static final String CYAN = "\u001B[36m";
-  private static final String GREEN = "\u001B[32m";
+public class TerminalColors {
 
   private TerminalColors() {}
 

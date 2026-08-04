@@ -5,7 +5,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
@@ -13,6 +15,7 @@ import org.eclipse.jgit.treewalk.FileTreeIterator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,26 +36,49 @@ public class GitAnalyzer {
 
     try (Git git = new Git(repo);
         RevWalk walk = new RevWalk((repo))) {
-      RevCommit baseCommit = walk.parseCommit(repo.resolve(baseRef));
+      ObjectId baseId = repo.resolve(baseRef);
+
+      if (baseId == null) {
+        throw new IllegalArgumentException(
+            "Unknown ref: '" + baseRef + "' -- no matching branch, tag, or commit in this repo.");
+      }
+
+      RevCommit baseCommit = walk.parseCommit(baseId);
 
       CanonicalTreeParser oldTree = new CanonicalTreeParser();
       oldTree.reset(repo.newObjectReader(), baseCommit.getTree());
 
       FileTreeIterator workingTree = new FileTreeIterator(repo);
+
       List<DiffEntry> diffs = git.diff().setOldTree(oldTree).setNewTree(workingTree).call();
 
       for (DiffEntry entry : diffs) {
-        String path = repoPath.resolve(entry.getNewPath()).normalize().toString();
+        String relativePath =
+            entry.getChangeType() == DiffEntry.ChangeType.DELETE
+                ? entry.getOldPath()
+                : entry.getNewPath();
+
+        String path = repoPath.resolve(relativePath).normalize().toString();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+
         try (DiffFormatter formatter = new DiffFormatter(out)) {
           formatter.setRepository(repo);
-          formatter.format(entry);
+
+          FileHeader header = formatter.toFileHeader(entry);
+
+          if (header.getPatchType() != FileHeader.PatchType.UNIFIED) {
+            out.write("(binary file changed)".getBytes(StandardCharsets.UTF_8));
+          } else {
+            formatter.format(entry);
+          }
         }
-        diffByFile.put(path, out.toString());
+
+        diffByFile.put(path, out.toString(StandardCharsets.UTF_8));
       }
 
       return diffByFile;
+
     } catch (AmbiguousObjectException | GitAPIException e) {
       throw new IOException(e);
     }

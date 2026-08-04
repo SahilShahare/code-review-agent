@@ -3,13 +3,13 @@ package com.codereview.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class MessageHighlighter {
+import static com.codereview.constants.Constants.BOLD;
+import static com.codereview.constants.Constants.FG_BRIGHT_BLUE;
+import static com.codereview.constants.Constants.FG_BRIGHT_RED;
+import static com.codereview.constants.Constants.FG_MAGENTA;
+import static com.codereview.constants.Constants.RESET;
 
-  private static final String RESET = "\u001B[0m";
-  private static final String BOLD = "\u001B[1m";
-  private static final String FG_BRIGHT_RED = "\u001B[91m"; // <exception>
-  private static final String FG_MAGENTA = "\u001B[35m"; // <class>
-  private static final String FG_BRIGHT_BLUE = "\u001B[94m"; // <method>
+public class MessageHighlighter {
 
   // Non-greedy .*? so "<class>A</class> and <class>B</class>" matches as
   // two separate tags instead of one span from the first <class> to the last </class>.

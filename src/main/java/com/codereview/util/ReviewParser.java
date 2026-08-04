@@ -2,19 +2,13 @@ package com.codereview.util;
 
 import com.codereview.model.enums.Severity;
 import com.codereview.model.record.Finding;
-
+import com.codereview.model.record.ParseResult;
+import com.codereview.model.record.UnparsedBlock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Parses the LLM's response into structured Finding objects, per the format requested in
- * review-prompt's template (FILE/SEVERITY/LOCATION/MESSAGE blocks separated by "---" lines).
- * Deliberately tolerant: a model that doesn't follow the format exactly (extra prose, wrong
- * severity casing, missing field) just yields fewer or zero findings rather than throwing -- Main
- * falls back to plain text output when parsing comes up empty.
- */
 public final class ReviewParser {
 
   private static final Pattern FIELD =
@@ -23,17 +17,32 @@ public final class ReviewParser {
 
   private ReviewParser() {}
 
-  public static List<Finding> parse(String raw) {
+  public static ParseResult parse(String raw) {
     List<Finding> findings = new ArrayList<>();
+    List<UnparsedBlock> unparsed = new ArrayList<>();
 
     for (String block : BLOCK_SEPARATOR.split(raw)) {
+      if (block.isBlank()) {
+        // Empty segments show up around leading/trailing separators -- not a format drift,
+        // just an artifact of splitting on "---".
+        continue;
+      }
+
       Finding finding = parseBlock(block);
+
       if (finding != null) {
         findings.add(finding);
+      } else {
+        String trimmed = block.trim();
+        Logger.error(
+            "Could not parse a review block into FILE/SEVERITY/MESSAGE -- the model may have "
+                + "drifted from the expected format. Raw block:\n"
+                + trimmed);
+        unparsed.add(new UnparsedBlock(trimmed));
       }
     }
 
-    return findings;
+    return new ParseResult(findings, unparsed);
   }
 
   private static Finding parseBlock(String block) {

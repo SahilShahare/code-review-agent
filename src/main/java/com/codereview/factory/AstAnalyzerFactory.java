@@ -5,11 +5,13 @@ import com.codereview.analyzer.JavaAstAnalyzer;
 import com.codereview.model.enums.Language;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AstAnalyzerFactory {
+
   private AstAnalyzerFactory() {}
 
   public static Optional<AstAnalyzer> build(Language lang) {
@@ -22,6 +24,6 @@ public class AstAnalyzerFactory {
     return Arrays.stream(Language.values())
         .map(AstAnalyzerFactory::build)
         .flatMap(Optional::stream)
-        .collect(Collectors.toUnmodifiableSet());
+        .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 }

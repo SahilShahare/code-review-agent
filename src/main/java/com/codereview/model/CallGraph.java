@@ -9,7 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CallGraph {
-  private final Map<String, Set<String>> calless = new HashMap<>();
+
+  private final Map<String, Set<String>> callees = new HashMap<>();
   private final Map<String, Set<String>> callers = new HashMap<>();
   private final Map<String, MethodSignature> signatureById = new HashMap<>();
   private final Map<String, String> sourceById = new HashMap<>();
@@ -20,7 +21,7 @@ public class CallGraph {
   }
 
   public void addCall(MethodSignature caller, MethodSignature callee) {
-    calless.computeIfAbsent(caller.canonicalId(), id -> new HashSet<>()).add(callee.canonicalId());
+    callees.computeIfAbsent(caller.canonicalId(), id -> new HashSet<>()).add(callee.canonicalId());
     callers.computeIfAbsent(callee.canonicalId(), id -> new HashSet<>()).add(caller.canonicalId());
 
     signatureById.putIfAbsent(callee.canonicalId(), callee);
@@ -28,7 +29,7 @@ public class CallGraph {
   }
 
   public Set<MethodSignature> getCallees(MethodSignature sig) {
-    return calless.getOrDefault(sig.canonicalId(), Set.of()).stream()
+    return callees.getOrDefault(sig.canonicalId(), Set.of()).stream()
         .map(signatureById::get)
         .collect(Collectors.toUnmodifiableSet());
   }
