@@ -1,7 +1,7 @@
 package com.codereview.builder;
 
 import com.codereview.model.CallGraph;
-import com.codereview.model.record.MethodSignature;
+import com.codereview.model.records.MethodSignature;
 
 import java.io.IOException;
 import java.io.InputStream;

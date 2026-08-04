@@ -1,7 +1,7 @@
 package com.codereview.util;
 
 import com.codereview.model.enums.Severity;
-import com.codereview.model.record.Finding;
+import com.codereview.model.records.Finding;
 
 import java.io.PrintStream;
 import java.util.LinkedHashMap;

@@ -4,7 +4,7 @@ import com.codereview.constants.Constants;
 import com.codereview.factory.JavaMethodSignatureFactory;
 import com.codereview.model.CallGraph;
 import com.codereview.model.enums.Language;
-import com.codereview.model.record.JavaMethodSignature;
+import com.codereview.model.records.JavaMethodSignature;
 import com.codereview.util.Logger;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParserConfiguration;

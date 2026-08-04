@@ -1,4 +1,4 @@
-package com.codereview.model.record;
+package com.codereview.model.records;
 
 public interface MethodSignature {
   String canonicalId();

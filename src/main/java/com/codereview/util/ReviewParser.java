@@ -1,9 +1,9 @@
 package com.codereview.util;
 
 import com.codereview.model.enums.Severity;
-import com.codereview.model.record.Finding;
-import com.codereview.model.record.ParseResult;
-import com.codereview.model.record.UnparsedBlock;
+import com.codereview.model.records.Finding;
+import com.codereview.model.records.ParseResult;
+import com.codereview.model.records.UnparsedBlock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

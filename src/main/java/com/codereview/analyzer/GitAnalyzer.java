@@ -50,20 +50,22 @@ public class GitAnalyzer {
 
       FileTreeIterator workingTree = new FileTreeIterator(repo);
 
-      List<DiffEntry> diffs = git.diff().setOldTree(oldTree).setNewTree(workingTree).call();
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-      for (DiffEntry entry : diffs) {
-        String relativePath =
-            entry.getChangeType() == DiffEntry.ChangeType.DELETE
-                ? entry.getOldPath()
-                : entry.getNewPath();
+      try (DiffFormatter formatter = new DiffFormatter(out)) {
+        formatter.setRepository(repo);
 
-        String path = repoPath.resolve(relativePath).normalize().toString();
+        List<DiffEntry> diffs = formatter.scan(oldTree, workingTree);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (DiffEntry entry : diffs) {
+          out.reset();
 
-        try (DiffFormatter formatter = new DiffFormatter(out)) {
-          formatter.setRepository(repo);
+          String relativePath =
+              entry.getChangeType() == DiffEntry.ChangeType.DELETE
+                  ? entry.getOldPath()
+                  : entry.getNewPath();
+
+          String path = repoPath.resolve(relativePath).normalize().toString();
 
           FileHeader header = formatter.toFileHeader(entry);
 
@@ -72,14 +74,16 @@ public class GitAnalyzer {
           } else {
             formatter.format(entry);
           }
-        }
 
-        diffByFile.put(path, out.toString(StandardCharsets.UTF_8));
+          diffByFile.put(path, out.toString(StandardCharsets.UTF_8));
+        }
       }
+
+      System.out.println(diffByFile);
 
       return diffByFile;
 
-    } catch (AmbiguousObjectException | GitAPIException e) {
+    } catch (AmbiguousObjectException e) {
       throw new IOException(e);
     }
   }
