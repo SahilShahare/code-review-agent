@@ -19,54 +19,65 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class JavaAstAnalyzer implements AstAnalyzer {
 
-    @Override
-    public void analyze(Path sourceRoot, CallGraph callGraph) throws IOException {
-        CombinedTypeSolver typeSolver = new CombinedTypeSolver();
-        typeSolver.add(new ReflectionTypeSolver());
-        typeSolver.add(new JavaParserTypeSolver(sourceRoot));
+  @Override
+  public void analyze(Path sourceRoot, CallGraph callGraph) throws IOException {
+    CombinedTypeSolver typeSolver = new CombinedTypeSolver();
+    typeSolver.add(new ReflectionTypeSolver());
+    typeSolver.add(new JavaParserTypeSolver(sourceRoot));
 
-        ParserConfiguration config = new ParserConfiguration()
-                .setSymbolResolver(new JavaSymbolSolver(typeSolver));
-        StaticJavaParser.setConfiguration(config);
+    ParserConfiguration config =
+        new ParserConfiguration().setSymbolResolver(new JavaSymbolSolver(typeSolver));
+    StaticJavaParser.setConfiguration(config);
 
-        try(Stream<Path> files = Files.walk(sourceRoot)) {
-            files.filter(file -> Language.JAVA.getExtensions()
-                    .stream()
-                    .anyMatch(ext -> file.toString().endsWith(String.format(".%s", ext))))
-                    .forEach(file -> parseFile(file, callGraph));
-        }
+    try (Stream<Path> files = Files.walk(sourceRoot)) {
+      files
+          .filter(
+              file ->
+                  Language.JAVA.getExtensions().stream()
+                      .anyMatch(ext -> file.toString().endsWith(String.format(".%s", ext))))
+          .forEach(file -> parseFile(file, callGraph));
     }
+  }
 
-    private void parseFile(Path file, CallGraph callGraph) {
-        try {
-            CompilationUnit cu = StaticJavaParser.parse(file);
+  private void parseFile(Path file, CallGraph callGraph) {
+    try {
+      CompilationUnit cu = StaticJavaParser.parse(file);
 
-            cu.findAll(MethodDeclaration.class).forEach(method -> {
+      cu.findAll(MethodDeclaration.class)
+          .forEach(
+              method -> {
                 JavaMethodSignature callerSig = JavaMethodSignatureFactory.build(method, file);
                 callGraph.registerMethod(callerSig, method.toString());
 
-                method.findAll(MethodCallExpr.class).forEach(call ->{
-                    try {
-                        ResolvedMethodDeclaration resolved = call.resolve();
-                        callGraph.addCall(callerSig, JavaMethodSignatureFactory.build(resolved));
-                    } catch (Exception unresolved) {
-                        System.err.println(String.format( "Skipping unresolved method call '%s' in %s: source not " +
-                                "available on the symbol-solver classpath or unsupported generic resolution edge case."
-                                , call, file));
-                    }
-                });
-            });
-        } catch (IOException e) {
-            System.err.println("Could not read " + file + ": "+ e.getMessage());
-        } catch (ParseProblemException e) {
-            /* A file with a syntax error (WIP branch, broken template, etc.) shouldn't
-             take down analysis of every other file -- skip it and keep going. */
-            System.err.println("Skipping " + file + " (syntax error): " + e.getMessage());
-        }
+                method
+                    .findAll(MethodCallExpr.class)
+                    .forEach(
+                        call -> {
+                          try {
+                            ResolvedMethodDeclaration resolved = call.resolve();
+                            callGraph.addCall(
+                                callerSig, JavaMethodSignatureFactory.build(resolved));
+                          } catch (Exception unresolved) {
+                            System.err.println(
+                                "Skipping unresolved method call "
+                                    + call
+                                    + " in "
+                                    + file
+                                    + ": source not available "
+                                    + "on the symbol-solver classpath or unsupported generic resolution edge case.");
+                          }
+                        });
+              });
+    } catch (IOException e) {
+      System.err.println("Could not read " + file + ": " + e.getMessage());
+    } catch (ParseProblemException e) {
+      /* A file with a syntax error (WIP branch, broken template, etc.) shouldn't
+      take down analysis of every other file -- skip it and keep going. */
+      System.err.println("Skipping " + file + " (syntax error): " + e.getMessage());
     }
+  }
 }

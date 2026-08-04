@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public interface LLMModel {
-    String id();
+  String id();
 
-    static <E extends Enum<E> & LLMModel> Optional<E> fromId(Class<E> enumClass, String id) {
-        return Arrays.stream(enumClass.getEnumConstants())
-                .filter(model -> model.id().equals(id))
-                .findFirst();
-    }
+  static <E extends Enum<E> & LLMModel> Optional<E> fromId(Class<E> enumClass, String id) {
+    return Arrays.stream(enumClass.getEnumConstants())
+        .filter(model -> model.id().equals(id))
+        .findFirst();
+  }
 }

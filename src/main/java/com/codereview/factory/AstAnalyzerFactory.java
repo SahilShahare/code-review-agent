@@ -10,21 +10,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AstAnalyzerFactory {
-    private AstAnalyzerFactory() {}
+  private AstAnalyzerFactory() {}
 
-    public static Optional<AstAnalyzer> build(Language lang) {
-        switch(lang) {
-            case JAVA :
-                return Optional.of(new JavaAstAnalyzer());
-            default:
-                return Optional.empty();
-        }
-    }
+  public static Optional<AstAnalyzer> build(Language lang) {
+    return switch (lang) {
+      case JAVA -> Optional.of(new JavaAstAnalyzer());
+    };
+  }
 
-    public static Set<AstAnalyzer> all() {
-        return Arrays.stream(Language.values())
-                .map(AstAnalyzerFactory::build)
-                .flatMap(Optional::stream)
-                .collect(Collectors.toUnmodifiableSet());
-    }
+  public static Set<AstAnalyzer> all() {
+    return Arrays.stream(Language.values())
+        .map(AstAnalyzerFactory::build)
+        .flatMap(Optional::stream)
+        .collect(Collectors.toUnmodifiableSet());
+  }
 }
