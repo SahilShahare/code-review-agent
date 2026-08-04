@@ -1,6 +1,4 @@
-package com.codereview.model.signatures;
-
-import com.codereview.model.enums.Language;
+package com.codereview.model.record;
 
 public interface MethodSignature {
   String canonicalId();

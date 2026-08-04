@@ -1,6 +1,6 @@
 package com.codereview.factory;
 
-import com.codereview.model.signatures.JavaMethodSignature;
+import com.codereview.model.record.JavaMethodSignature;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;

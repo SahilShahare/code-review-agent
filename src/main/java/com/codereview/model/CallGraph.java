@@ -1,6 +1,6 @@
 package com.codereview.model;
 
-import com.codereview.model.signatures.MethodSignature;
+import com.codereview.model.record.MethodSignature;
 
 import java.util.HashMap;
 import java.util.HashSet;

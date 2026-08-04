@@ -1,4 +1,4 @@
-package com.codereview.model.signatures;
+package com.codereview.model.record;
 
 import com.codereview.model.enums.Language;
 

@@ -16,13 +16,39 @@ that spans files, code made unreachable by a change, and side
 effects on callees -- including callees that live in a different
 changed file.
 
+Be thorough. Report every genuine issue you notice, not just the
+single most important one -- it's normal and expected to have
+several findings for one file, or none at all for a clean change.
+Don't hold back on minor issues (NIT severity exists for exactly
+this); the format requirement below is about not adding narrative
+text AROUND the findings, it is not a limit on how many findings
+you report.
+
 %s
 
 --- SOURCE MAP (canonicalId -> source, each entry once) ---
 %s
 
-Respond with a short list of concrete findings, grouped by file.
-For each: severity (blocker/warning/nit), the specific line or
-method, and why it matters. Call out explicitly any finding that
-depends on a cross-file interaction. If nothing significant, say
-so briefly.
+Respond with a series of findings, one block per finding, in EXACTLY
+this format -- no introduction, no summary, no narrative text before,
+after, or between blocks. This is a formatting rule only: report as
+many blocks as there are genuine findings, however many that is.
+
+FILE: <file path, exactly as shown above>
+SEVERITY: BLOCKER or WARNING or NIT
+LOCATION: <method name or line reference>
+MESSAGE: <one to three sentences explaining the issue and why it
+matters, citing the relevant caller/callee from the call graph or
+source map where relevant. Wrap every class name in <class></class>,
+every method name in <method></method>, and every exception/error
+type in <exception></exception> -- for example: "<method>charge</method>
+in <class>PaymentClient</class> now throws
+<exception>IllegalStateException</exception>, but
+<method>placeOrder</method> in <class>OrderService</class> has no
+try/catch around the call.">
+---
+
+Repeat that block for every finding -- one per issue, not one per
+file. If there are genuinely no significant findings anywhere,
+respond with exactly:
+NO FINDINGS

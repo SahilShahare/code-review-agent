@@ -3,7 +3,7 @@ package com.codereview.analyzer;
 import com.codereview.factory.JavaMethodSignatureFactory;
 import com.codereview.model.CallGraph;
 import com.codereview.model.enums.Language;
-import com.codereview.model.signatures.JavaMethodSignature;
+import com.codereview.model.record.JavaMethodSignature;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;

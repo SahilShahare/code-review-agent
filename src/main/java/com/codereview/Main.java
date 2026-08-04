@@ -7,11 +7,16 @@ import com.codereview.client.LLMClient;
 import com.codereview.factory.AstAnalyzerFactory;
 import com.codereview.factory.LLMClientFactory;
 import com.codereview.model.CallGraph;
+import com.codereview.model.record.Finding;
+import com.codereview.util.ReviewParser;
+import com.codereview.util.ReviewPrinter;
+import com.codereview.util.TerminalColors;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,7 +57,13 @@ public class Main {
       System.out.println("Reviewing " + diffs.size() + " changed file(s) in one pass...\n");
       String prompt = contextBuilder.buildPrompt(diffs);
       String review = llmClient.review(prompt);
-      System.out.println(review);
+
+      List<Finding> findings = ReviewParser.parse(review);
+      if (!findings.isEmpty()) {
+        ReviewPrinter.print(findings, System.out);
+      } else {
+        System.out.println(TerminalColors.colorizeReview(review));
+      }
     }
   }
 }
