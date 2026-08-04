@@ -4,6 +4,7 @@ import com.codereview.factory.JavaMethodSignatureFactory;
 import com.codereview.model.CallGraph;
 import com.codereview.model.enums.Language;
 import com.codereview.model.record.JavaMethodSignature;
+import com.codereview.util.Logger;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
@@ -62,22 +63,20 @@ public class JavaAstAnalyzer implements AstAnalyzer {
                             callGraph.addCall(
                                 callerSig, JavaMethodSignatureFactory.build(resolved));
                           } catch (Exception unresolved) {
-                            System.err.println(
-                                "Skipping unresolved method call "
-                                    + call
-                                    + " in "
-                                    + file
-                                    + ": source not available "
-                                    + "on the symbol-solver classpath or unsupported generic resolution edge case.");
+                            Logger.error(
+                                String.format(
+                                    "Skipping unresolved method call %s in %s: source not available on the "
+                                        + "symbol-solver classpath or unsupported generic resolution edge case.",
+                                    call, file));
                           }
                         });
               });
     } catch (IOException e) {
-      System.err.println("Could not read " + file + ": " + e.getMessage());
+      Logger.error(String.format("Could not read %s: %s", file, e.getMessage()));
     } catch (ParseProblemException e) {
       /* A file with a syntax error (WIP branch, broken template, etc.) shouldn't
       take down analysis of every other file -- skip it and keep going. */
-      System.err.println("Skipping " + file + " (syntax error): " + e.getMessage());
+      Logger.error(String.format("Skipping %s (syntax error): %s", file, e.getMessage()));
     }
   }
 }

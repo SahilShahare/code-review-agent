@@ -8,6 +8,7 @@ import com.codereview.factory.AstAnalyzerFactory;
 import com.codereview.factory.LLMClientFactory;
 import com.codereview.model.CallGraph;
 import com.codereview.model.record.Finding;
+import com.codereview.util.Logger;
 import com.codereview.util.ReviewParser;
 import com.codereview.util.ReviewPrinter;
 import com.codereview.util.TerminalColors;
@@ -23,8 +24,8 @@ import java.util.Set;
 public class Main {
   public static void main(String[] args) throws Exception {
     if (args.length < 2) {
-      System.err.println("Usage: java -jar ast-review-agent.jar <repo-path> <src-root> [baseRef]");
-      System.err.println("  e.g.: java -jar ast-review-agent.jar . src/main/java HEAD");
+      Logger.error("Usage: java -jar code-review-agent.jar <repo-path> <src-root> [baseRef]\n"+
+              "  e.g.: java -jar code-review-agent.jar . src/main/java HEAD");
       System.exit(1);
     }
 
@@ -38,23 +39,23 @@ public class Main {
 
     Set<AstAnalyzer> analyzers = AstAnalyzerFactory.all();
 
-    System.out.println("Parsing source tree and building call graph...");
+    Logger.info("Parsing source tree and building call graph...");
+
     CallGraph callGraph = new CallGraph();
     for (AstAnalyzer analyzer : analyzers) {
       analyzer.analyze(srcRoot, callGraph);
     }
-    System.out.println("Indexed " + callGraph.allMethods().size() + " methods.");
 
     try (Repository repo =
         new FileRepositoryBuilder().setGitDir(new File(repoPath, ".git")).build()) {
       Map<String, String> diffs = new GitAnalyzer(repo).getDiff(headRef);
       if (diffs.isEmpty()) {
-        System.out.println("No changed files from previous commit.");
+        Logger.info("No changed files from previous commit.");
         return;
       }
 
       ReviewContextBuilder contextBuilder = new ReviewContextBuilder(callGraph, "reviewPrompt.txt");
-      System.out.println("Reviewing " + diffs.size() + " changed file(s) in one pass...\n");
+      Logger.info("Reviewing " + diffs.size() + " changed file(s) in one pass...\n");
       String prompt = contextBuilder.buildPrompt(diffs);
       String review = llmClient.review(prompt);
 
