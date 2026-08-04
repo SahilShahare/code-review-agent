@@ -2,16 +2,19 @@ package com.codereview;
 
 import com.codereview.analyzer.AstAnalyzer;
 import com.codereview.analyzer.GitAnalyzer;
-import com.codereview.analyzer.JavaAstAnalyzer;
 import com.codereview.builder.ReviewContextBuilder;
+import com.codereview.client.LLMClient;
+import com.codereview.factory.AstAnalyzerFactory;
+import com.codereview.factory.LLMClientFactory;
 import com.codereview.model.CallGraph;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -25,17 +28,11 @@ public class Main {
         Path srcRoot = Path.of(repoPath, args[1]);
         String headRef = args.length > 3 ? args[3] : "HEAD";
 
-//        String apiKey = System.getenv("GEMINI_API_KEY");
-//        if (apiKey == null || apiKey.isBlank()) {
-//            System.err.println("Set GEMINI_API_KEY in your environment.");
-//            System.exit(1);
-//        }
+        String model = System.getenv().getOrDefault("LLM_MODEL", "gemini-3.5-flash");
 
-        String model = System.getenv().getOrDefault("GEMINI_MODEL", "gemini-2.5-pro");
+        LLMClient llmClient = LLMClientFactory.build(model);
 
-        List<AstAnalyzer> analyzers = List.of(
-                new JavaAstAnalyzer()
-        );
+        Set<AstAnalyzer> analyzers = AstAnalyzerFactory.all();
 
         System.out.println("Parsing source tree and building call graph...");
         CallGraph callGraph = new CallGraph();
@@ -61,7 +58,8 @@ public class Main {
             ReviewContextBuilder contextBuilder = new ReviewContextBuilder(callGraph, "reviewPrompt.txt");
             System.out.println("Reviewing " + diffs.size() + " changed file(s) in one pass...\n");
             String prompt = contextBuilder.buildPrompt(diffs);
-            System.out.println(prompt);
+            String review = llmClient.review(prompt);
+            System.out.println(review);
         }
 
 

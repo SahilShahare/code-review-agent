@@ -25,11 +25,6 @@ import java.util.stream.Stream;
 public class JavaAstAnalyzer implements AstAnalyzer {
 
     @Override
-    public Set<String> supportedExtensions(){
-        return Language.JAVA.getExtensions();
-    }
-
-    @Override
     public void analyze(Path sourceRoot, CallGraph callGraph) throws IOException {
         CombinedTypeSolver typeSolver = new CombinedTypeSolver();
         typeSolver.add(new ReflectionTypeSolver());

@@ -8,7 +8,5 @@ import java.util.Set;
 
 public interface AstAnalyzer {
 
-    public Set<String> supportedExtensions();
-
-    public void analyze(Path sourceRoot, CallGraph callGraph) throws IOException;
+    void analyze(Path sourceRoot, CallGraph callGraph) throws IOException;
 }

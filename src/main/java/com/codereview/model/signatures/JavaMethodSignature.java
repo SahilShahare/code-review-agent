@@ -6,11 +6,7 @@ public record JavaMethodSignature(String qualifiedName, String filePath) impleme
 
     @Override
     public String canonicalId() {
-        return String.format("%s:%s", Language.JAVA.getName(), qualifiedName);
+        return String.format("%s:%s", Language.JAVA.getName(), qualifiedName());
     }
 
-    @Override
-    public Language language() {
-        return Language.JAVA;
-    }
 }
