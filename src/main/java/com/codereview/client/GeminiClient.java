@@ -23,17 +23,25 @@ public class GeminiClient implements LLMClient {
   private static final String CANDIDATE_TEXT_PATH = "/candidates/0/content/parts/0/text";
   private static final String BLOCK_REASON_PATH = "/promptFeedback/blockReason";
 
-  private final HttpClient client =
-      HttpClient.newBuilder()
-          .connectTimeout(Duration.ofSeconds(LLM_API_CONNECTION_TIMEOUT))
-          .build();
+  private final HttpClient client;
   private final GeminiModel model;
   private final String apiKey;
   private final ObjectMapper mapper = new ObjectMapper();
 
   public GeminiClient(GeminiModel model, String apiKey) {
+    this(
+        model,
+        apiKey,
+        HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(LLM_API_CONNECTION_TIMEOUT))
+            .build());
+  }
+
+  //For Injecting HTTP Client while testing
+  GeminiClient(GeminiModel model, String apiKey, HttpClient client) {
     this.model = model;
     this.apiKey = apiKey;
+    this.client = client;
   }
 
   @Override

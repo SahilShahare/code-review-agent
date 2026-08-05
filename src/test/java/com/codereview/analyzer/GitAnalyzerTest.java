@@ -81,6 +81,19 @@ public class GitAnalyzerTest {
   }
 
   @Test
+  void getDiffDetectsDeletedTrackedFile() throws Exception {
+    Files.delete(trackedFile);
+
+    GitAnalyzer analyzer = new GitAnalyzer(repository);
+    Map<String, String> diffs = analyzer.getDiff("HEAD");
+
+    String expectedKey = repoDir.resolve("Foo.java").toAbsolutePath().normalize().toString();
+
+    assertTrue(diffs.containsKey(expectedKey), "Expected diff map to contain key: " + expectedKey);
+    assertTrue(diffs.get(expectedKey).contains("-class Foo"));
+  }
+
+  @Test
   void getDiffThrowsIllegalArgumentExceptionForUnresolvableRef() {
     GitAnalyzer analyzer = new GitAnalyzer(repository);
 

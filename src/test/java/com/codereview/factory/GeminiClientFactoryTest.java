@@ -1,7 +1,9 @@
-package com.codereview.client;
+package com.codereview.factory;
 
-import com.codereview.factory.LLMClientFactory;
+import com.codereview.client.GeminiClient;
+import com.codereview.client.LLMClient;
 import org.junit.jupiter.api.Assumptions;
+import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -9,6 +11,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GeminiClientFactoryTest {
+
+  @Test
+  @SetEnvironmentVariable(key = "GEMINI_API_KEY", value = "test-api-key")
+  void validModelIdWithApiKeySetReturnsGeminiClient() {
+    LLMClient client = LLMClientFactory.build("gemini-3.5-flash");
+
+    assertInstanceOf(GeminiClient.class, client);
+  }
+
   @Test
   void unknownModelIdThrowsRuntimeExceptionWrappingIllegalArgumentException() {
     RuntimeException ex =
