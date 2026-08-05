@@ -14,6 +14,19 @@ AI-assisted Java code review tool that parses changed source with JavaParser, bu
 - Falls back to printing raw, unparsed model output if a response block doesn't match the expected format
 - Produces JaCoCo line/branch coverage reports
 
+## Tech Stack
+
+| Category            | Technology                                                        |
+|----------------------|----------------------------------------------------------------------|
+| Language / Runtime    | Java 17                                                              |
+| Build Tool             | Maven (`maven-shade-plugin` for the runnable fat jar)                 |
+| AST Parsing            | JavaParser (`javaparser-symbol-solver-core`)                          |
+| Git Diffing             | JGit (`org.eclipse.jgit`)                                            |
+| JSON Handling           | Jackson (`jackson-databind`)                                          |
+| AI Provider             | Gemini API (via `java.net.http.HttpClient`)                           |
+| Testing                 | JUnit 5, JUnit Pioneer, Mockito                                       |
+| Coverage                | JaCoCo (`jacoco-maven-plugin`)                                        |
+
 ## Architecture
 
 ```
