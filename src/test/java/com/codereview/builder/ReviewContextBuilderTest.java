@@ -13,10 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReviewContextBuilderTest {
 
+  private static final String TEST_PROMPT_FILE = "TestPrompt.txt";
+
   @Test
   void buildPromptIncludesDiffSectionForEachChangedFile() throws IOException {
     CallGraph callGraph = new CallGraph();
-    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, "testPrompt.txt");
+    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, TEST_PROMPT_FILE);
 
     Map<String, String> diffs = Map.of("src/Foo.java", "@@ -1,1 +1,2 @@\n+added line");
 
@@ -42,7 +44,7 @@ public class ReviewContextBuilderTest {
 
     Map<String, String> diffs = Map.of("src/Foo.java", "diff for Foo");
 
-    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, "testPrompt.txt");
+    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, TEST_PROMPT_FILE);
     String prompt = builder.buildPrompt(diffs);
 
     assertTrue(prompt.contains("Method: Java:com.example.Foo.bar()"));
@@ -63,7 +65,7 @@ public class ReviewContextBuilderTest {
 
     Map<String, String> diffs = Map.of("src/Lonely.java", "diff");
 
-    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, "testPrompt.txt");
+    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, TEST_PROMPT_FILE);
     String prompt = builder.buildPrompt(diffs);
 
     assertTrue(prompt.contains("Method: Java:com.example.Lonely.method()"));
@@ -85,7 +87,7 @@ public class ReviewContextBuilderTest {
 
     Map<String, String> diffs = Map.of("src/NoSource.java", "diff");
 
-    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, "testPrompt.txt");
+    ReviewContextBuilder builder = new ReviewContextBuilder(callGraph, TEST_PROMPT_FILE);
     String prompt = builder.buildPrompt(diffs);
 
     assertTrue(prompt.contains("(source unavailable"));

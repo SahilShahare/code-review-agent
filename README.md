@@ -168,19 +168,19 @@ code-review-agent/
         └── java/com/codereview/
 ```
 
-| Path                        | Contents                                                         |
-|------------------------------|-------------------------------------------------------------------|
-| `Main.java`                  | CLI entry point: argument parsing and orchestration                |
-| `analyzer/`                   | `GitAnalyzer` (JGit diff), `AstAnalyzer` + `JavaAstAnalyzer`        |
-| `builder/`                    | `ReviewContextBuilder` — assembles the Gemini prompt                |
-| `client/`                     | `LLMClient` interface, `GeminiClient` (REST calls)                  |
-| `constants/`                  | `Constants` — defaults, endpoints, ANSI codes                       |
-| `factory/`                    | `AstAnalyzerFactory`, `LLMClientFactory`, signature factories        |
+| Path                        | Contents                                                                |
+|------------------------------|-------------------------------------------------------------------------|
+| `Main.java`                  | CLI entry point: argument parsing and orchestration                     |
+| `analyzer/`                   | `GitAnalyzer` (JGit diff), `AstAnalyzer` + `JavaAstAnalyzer`            |
+| `builder/`                    | `ReviewContextBuilder` — assembles the Gemini prompt                    |
+| `client/`                     | `LLMClient` interface, `GeminiClient` (REST calls)                      |
+| `constants/`                  | `Constants` — defaults, endpoints, ANSI codes                           |
+| `factory/`                    | `AstAnalyzerFactory`, `LLMClientFactory`, signature factories           |
 | `model/`                      | `CallGraph`, records (`MethodSignature`, `Finding`, `ParseResult`, ...) |
-| `model/enums/`                | `Language`, `Severity`, `GeminiModel`, `LLMRegistry`                 |
-| `util/`                       | `Logger`, `ReviewParser`, `ReviewPrinter`, `TerminalColors`           |
-| `resources/prompts/`          | `reviewPrompt.txt` — Gemini prompt template                          |
-| `test/java/com/codereview/`   | JUnit 5 test suite, mirrors the main package structure               |
+| `model/enums/`                | `Language`, `Severity`, `GeminiModel`, `LLMRegistry`                    |
+| `util/`                       | `Logger`, `ReviewParser`, `ReviewPrinter`, `TerminalColors`             |
+| `resources/prompts/`          | `ReviewPrompt.txt` — Gemini prompt template                             |
+| `test/java/com/codereview/`   | JUnit 5 test suite, mirrors the main package structure                  |
 
 ## Limitations
 

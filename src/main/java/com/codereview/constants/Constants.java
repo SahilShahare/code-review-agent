@@ -18,7 +18,7 @@ public final class Constants {
   public static final String PROMPT_DIRECTORY = "prompts/";
   public static final String SOURCE_UNAVAILABLE =
       "(source unavailable -- declared outside the parsed source tree)";
-  public static final String PROMPT_FILE = "reviewPrompt.txt";
+  public static final String PROMPT_FILE = "ReviewPrompt.txt";
   
   //TEXT STYLE & COLORS
   public static final String RESET = "\u001B[0m";
